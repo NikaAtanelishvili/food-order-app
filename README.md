@@ -1,3 +1,5 @@
+### This app isn't fully finished, i still need to add API for meals.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
