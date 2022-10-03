@@ -58,7 +58,7 @@ const AvailableMeals = () => {
       setMeals(loadedMeals)
       setIsLoading(false)
     })().catch(err => {
-      // handeling an error inside of a promis
+      // handeling an error inside of a promise
       console.log(err)
       setIsLoading(false)
       setHttpError(err.message)
