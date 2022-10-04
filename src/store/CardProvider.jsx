@@ -1,5 +1,4 @@
 import { useReducer } from 'react'
-import { act } from 'react-dom/test-utils'
 import CartContext from './cart-context'
 
 const defaultCartState = {
@@ -65,6 +64,10 @@ const cartReducer = (state, action) => {
     }
   }
 
+  if (action.type === 'CLEAR') {
+    return defaultCartState
+  }
+
   return defaultCartState // default
 }
 
@@ -85,11 +88,16 @@ const CardProvider = props => {
     dispatchCartAction({ type: 'REMOVE_CART_ITEM', id: id })
   }
 
+  const clearCartHandler = () => {
+    dispatchCartAction({ type: 'CLEAR' })
+  }
+
   const cartContext = {
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemToCartHandler,
     removeItem: removeItemFromCartHandler,
+    clearCart: clearCartHandler,
   }
 
   return (

@@ -1,10 +1,15 @@
 import styles from './Cart.module.css'
 import Modal from '../UI/Modal'
 import CartContext from '../../store/cart-context'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import CartItem from './CartItem'
+import Checkout from './Checkout'
+import { FIREBASE_ORDERS_URL } from '../../helper/config'
 
 const Cart = props => {
+  const [isCheckout, setIsCheckout] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [didSubmit, setDidSubmit] = useState(false)
   const cartCtx = useContext(CartContext)
 
   const totalAmount = `$ ${Math.abs(cartCtx.totalAmount.toFixed(2))}` // total amount
@@ -16,6 +21,25 @@ const Cart = props => {
 
   const cartItemAddHandler = item => {
     cartCtx.addItem({ ...item, amount: 1 })
+  }
+
+  const orderHandler = () => {
+    setIsCheckout(true)
+  }
+
+  // send order & user data to firebase
+  const submitOrderHandler = async userData => {
+    setIsSubmitting(true)
+    await fetch(FIREBASE_ORDERS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        user: userData,
+        orderedItems: cartCtx.items,
+      }),
+    })
+    setIsSubmitting(false)
+    setDidSubmit(true)
+    cartCtx.clearCart() // clear cart
   }
 
   const cartItems = (
@@ -34,19 +58,51 @@ const Cart = props => {
     </ul>
   )
 
-  return (
-    <Modal onClose={props.onCloseCart}>
+  const modalActions = (
+    <div className={styles.actions}>
+      <button onClick={props.onCloseCart} className={styles['button--alt']}>
+        Close
+      </button>
+      {hasItems && (
+        <button className={styles.button} onClick={orderHandler}>
+          Order
+        </button>
+      )}
+    </div>
+  )
+
+  const cartModalContent = (
+    <>
       {cartItems}
       <div className={styles.total}>
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
+      {isCheckout && (
+        <Checkout onCancel={props.onCloseCart} onConfirm={submitOrderHandler} />
+      )}
+      {!isCheckout && modalActions}
+    </>
+  )
+
+  const isSubmittingModalContent = <p>Sending order data...</p>
+
+  const didSubmitModalContent = (
+    <>
+      <p>Successfully set the order! ✅ </p>
       <div className={styles.actions}>
-        <button onClick={props.onCloseCart} className={styles['button--alt']}>
+        <button onClick={props.onCloseCart} className={styles.button}>
           Close
         </button>
-        {hasItems && <button className={styles.button}>Order</button>}
       </div>
+    </>
+  )
+
+  return (
+    <Modal onClose={props.onClose}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && isSubmittingModalContent}
+      {!isSubmitting && didSubmit && didSubmitModalContent}
     </Modal>
   )
 }

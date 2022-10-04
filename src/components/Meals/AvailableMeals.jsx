@@ -2,7 +2,7 @@ import styles from './AvailableMeals.module.css'
 import MealItem from './MealItem/MealItem'
 import Card from '../UI/Card'
 import { useEffect, useState } from 'react'
-import FIREBASE_API_URL from '../../helper/config'
+import {FIREBASE_MEALS_URL} from '../../helper/config'
 
 const DUMMY_MEALS = [
   /* {
@@ -38,7 +38,7 @@ const AvailableMeals = () => {
 
   useEffect(() => {
     ;(async () => {
-      const response = await fetch(FIREBASE_API_URL)
+      const response = await fetch(FIREBASE_MEALS_URL)
 
       if (!response.ok) throw new Error('⚠️ Something went wrong! ')
 
