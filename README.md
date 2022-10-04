@@ -1,4 +1,4 @@
-### 📢 This app isn't fully finished, i still need to add API for meals.
+
 
 # Getting Started with Create React App
 
